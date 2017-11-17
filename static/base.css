@@ -1,0 +1,79 @@
+body,
+html,
+div,
+span,
+ul,
+li,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input,
+select,
+th,
+tr,
+td,
+table,
+textarea,
+p {
+    padding: 0;
+    margin: 0;
+    font-family: 'Microsoft Yahei', 'Hiragino Sans GB', '微软雅黑', Arial, sans-serif;
+}
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: rgba(253, 253, 253, 1);
+}
+
+ul,
+li {
+    list-style: none;
+}
+
+a,
+a:hover {
+    text-decoration: none;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.clearfix:after {
+    content: " ";
+    display: block;
+    clear: both;
+    height: 0;
+}
+
+.clearfix {
+    zoom: 1;
+}
+
+#magtop {
+    padding-top: 110px;
+}
+
+input,
+textarea {
+    outline: none;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+}
