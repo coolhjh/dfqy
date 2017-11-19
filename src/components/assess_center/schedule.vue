@@ -10,11 +10,11 @@
         </div>
         <div class="title">
           <p><span @click="weekPre"> < </span> 本周 <span @click="weekNext"> > </span></p>
-          <div class="date_pick_box"  @mouseover="showCalendar">
+          <div class="date_pick_box"  @mouseover="showCalendar" @mouseout="hideCalendar">
             <p v-text="datepick">
               <!-- 悬浮日历 -->
-              <div class="date_pick_content" v-show="isShowCalendar">
-                 <datepicker></datepicker>
+              <div class="date_pick_content" v-show="isShowCalendar" @click="isShowCalendar=false">
+                 <datepicker @sendDate="reseDate"></datepicker>
               </div>
             </p>
           </div>
@@ -44,10 +44,10 @@
         </ul>
         <!-- 时间点对应的日程表格 -->
         <div class="list">
-          <ul @click="showModal" v-for="(value,index) in timeList" :key = "index">
-            <li v-for="(item, index2) in days" :key = "index2" :datetime="item.getFullYear()+'-'+   (item.getMonth()+1)+'-'+item.getDate()">
-              <p></p>
-              <p></p>
+          <ul @click="showModal" v-for="(item,index) in timeList" :key = "index">
+            <li v-for="(item2, index2) in days" :key = "index2" :data-clock="index" :data-date="index2">
+              <p @click="setWork" class="ah"></p>
+              <p @click="setWork" class="ph"></p>
           </li>
         </ul>
         </div>
@@ -60,13 +60,13 @@
           <form action="">
             <select name="timeStart" id="">
               <option value="">设置开始时间</option>
-              <option value="8:00">8:00</option>
-              <option value="8:00">8:30</option>
+              <option :value="hh" v-text="((hh*1+8)<10?'0'+(hh*1+8)+':00':(hh*1+8)+':00')">8:00</option>
+              <option :value="hh" v-text="((hh*1+8)<10?'0'+(hh*1+8)+':30':(hh*1+8)+':30')">8:30</option>
             </select>
             <select name="timeEnd" id="">
               <option value="">设置结束时间</option>
-              <option value="8:00">8:00</option>
-              <option value="8:00">8:30</option>
+              <option :value="hh" v-text="((hh*1+9)<10?'0'+(hh*1+9)+':00':(hh*1+9)+':00')">8:00</option>
+              <option :value="hh" v-text="((hh*1+9)<10?'0'+(hh*1+9)+':30':(hh*1+9)+':00')">8:30</option>
             </select>
           </form>
           <div class="comfirm">
@@ -94,17 +94,18 @@ export default {
       currentDay: 1, // 日期
       currentWeek: 1, // 星期
       datepick: "",
-      isShowCalendar: true,
-      days: [], //每一周的周日到周六
-      timeList: [
-        { "8:00-9:00": this.days },
-        { "9:00-10:00": this.days },
-        { "10:00-11:00": this.days },
-        { "11:00-12:00": this.days },
-        { "12:00-13:00": this.days },
-        { "13:00-14:00": this.days },
-        { "14:00-15:00": this.days }
-      ]
+      isShowCalendar: false,
+      hh:0,
+      days:[],
+      timeList:[
+        {"8-9":this.days},
+        {"9-10":this.days},
+        {"10-11":this.days},
+        {"11-12":this.days},
+        {"12-13":this.days},
+        {"13-14":this.days},
+        {"14-15":this.days}
+      ]//每一周的周日到周六
     };
   },
   mounted() {},
@@ -123,7 +124,9 @@ export default {
       if (d < 10) d = `0${d}`;
       return `${y}-${m}-${d}`;
     },
-
+    reseDate:function(arg){
+      this.datepick = arg;
+    },
     initData(cur) {
       let date = "";
       if (cur) {
@@ -165,7 +168,17 @@ export default {
       d.setDate(d.getDate() - 7);
       this.initData(d);
     },
-
+    setWork(el){
+      // console.log(el.currentTarget.className);//根据class判断具体哪半个小时ah/ph
+      // console.log(el.currentTarget.parentNode.dataset);//根据clock判断是第几个小时,根据date判断是哪天
+      var elInfo={
+        date:el.currentTarget.parentNode.dataset.date,
+        clock:el.currentTarget.parentNode.dataset.clock,
+        ss:el.currentTarget.className,
+      }
+      console.log(elInfo);
+      this.hh = elInfo.clock;
+    },
     //  下个星期
     weekNext() {
       const d = this.days[this.currentWeek]; // 如果当期日期是7号或者小于7号
@@ -220,6 +233,12 @@ export default {
     //       }
     //     );
     // }
+  },
+  watch:{
+    datepick(newvalue,oldvalue){
+      this.initData(newvalue);
+      this.isShowCalendar = false;
+    }
   }
 };
 </script>
@@ -314,6 +333,8 @@ export default {
 .list li p {
   width: 100%;
   height: 50%;
+  text-align: center;
+  vertical-align: middle;
 }
 .days {
   display: flex;
